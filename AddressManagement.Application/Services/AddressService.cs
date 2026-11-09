@@ -18,5 +18,10 @@ namespace AddressManagement.Application.Services
             await _repository.AddAsync(address);
             return address;
         }
+
+        public async Task<Address?> GetByIdAsync(Guid addressId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

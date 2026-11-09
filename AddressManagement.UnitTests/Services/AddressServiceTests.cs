@@ -12,7 +12,7 @@ namespace AddressManagement.UnitTests.Services
         /// </summary>
         /// <returns></returns>
         [Fact]
-        public async Task Test_WithValidAddress_ShouldAssignNewGuid()
+        public async Task Test_WithValidAddress_AssignNewGuid()
         {
             // Arrange
             var address = new Address
@@ -40,5 +40,39 @@ namespace AddressManagement.UnitTests.Services
             // Assert
             Assert.NotEqual(Guid.Empty, result.Id);
         }
+
+        [Fact]
+        public async Task Test_WithExistingId_ReturnAddress()
+        {
+            // Arrange
+            var addressId = Guid.NewGuid();
+
+            var expectedAddress = new Address
+            {
+                Id = addressId,
+                FirstName = "Dagobert",
+                LastName = "Duck",
+                City = "Entenhausen"
+            };
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.GetByIdAsync(
+                    addressId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedAddress);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.GetByIdAsync(addressId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(addressId, result.Id);
+            Assert.Same(expectedAddress, result);
+        }
+
     }
 }
