@@ -1,1 +1,7 @@
-<Solution />
+<Solution>
+  <Project Path="AddressManagement.Api/AddressManagement.Api.csproj" />
+  <Project Path="AddressManagement.Application/AddressManagement.Application.csproj" />
+  <Project Path="AddressManagement.Domain/AddressManagement.Domain.csproj" />
+  <Project Path="AddressManagement.Infrastucture/AddressManagement.Infrastucture.csproj" />
+  <Project Path="AddressManagement.UnitTests/AddressManagement.UnitTests.csproj" />
+</Solution>
