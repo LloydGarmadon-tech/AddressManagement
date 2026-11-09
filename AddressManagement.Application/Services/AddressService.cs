@@ -3,6 +3,7 @@ using AddressManagement.Domain.Entities;
 
 namespace AddressManagement.Application.Services
 {
+
     public class AddressService
     {
         private readonly IAddressRepository _repository;
@@ -21,7 +22,7 @@ namespace AddressManagement.Application.Services
 
         public async Task<Address?> GetByIdAsync(Guid addressId)
         {
-            throw new NotImplementedException();
+            return await _repository.GetByIdAsync(addressId);
         }
     }
 }
