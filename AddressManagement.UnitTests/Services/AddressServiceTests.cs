@@ -74,5 +74,33 @@ namespace AddressManagement.UnitTests.Services
             Assert.Same(expectedAddress, result);
         }
 
+
+
+        /// <summary>
+        /// Prüft, ob bei einer unbekannten Adress-ID null zurückgegeben wird.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithUnknownId_ReturnNull()
+        {
+            // Arrange
+            var addressId = Guid.NewGuid();
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.GetByIdAsync(
+                    addressId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Address?)null);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.GetByIdAsync(addressId);
+
+            // Assert
+            Assert.Null(result);
+        }
+
     }
 }
