@@ -10,7 +10,6 @@ namespace AddressManagement.UnitTests.Services
         /// <summary>
         /// Prüft, ob beim anlegen einer neuen Adresse eine neue Guid vergeben wird.
         /// </summary>
-        /// <returns></returns>
         [Fact]
         public async Task Test_WithValidAddress_AssignNewGuid()
         {
@@ -41,6 +40,9 @@ namespace AddressManagement.UnitTests.Services
             Assert.NotEqual(Guid.Empty, result.Id);
         }
 
+        /// <summary>
+        /// Prüft, ob bei einer bekannten Adress-ID die entsprechende Adresse zurückgegeben wird.
+        /// </summary>
         [Fact]
         public async Task Test_WithExistingId_ReturnAddress()
         {
