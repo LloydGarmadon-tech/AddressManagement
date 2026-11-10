@@ -27,7 +27,6 @@ namespace AddressManagement.Application.Services
             return address;
         }
 
-
         /// <summary>
         /// Ruft die Adresse anhand der angegebenen ID ab.
         /// </summary>
@@ -36,6 +35,11 @@ namespace AddressManagement.Application.Services
         public async Task<Address?> GetByIdAsync(Guid addressId)
         {
             return await _repository.GetByIdAsync(addressId);
+        }
+
+        public async Task<IReadOnlyList<Address>?> GetAllAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

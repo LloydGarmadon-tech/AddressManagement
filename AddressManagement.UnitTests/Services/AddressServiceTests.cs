@@ -104,5 +104,37 @@ namespace AddressManagement.UnitTests.Services
             Assert.Null(result);
         }
 
+        /// <summary>
+        /// Prüft, ob bei fehlenden Filtern alle Adressen zurückgegeben werden.
+        /// </summary>        
+        [Fact]
+        public async Task Test_WithoutFilters_ReturnAllAddresses()
+        {
+            // Arrange
+            IReadOnlyList<Address> expectedAddresses =
+            [
+                new Address { Id = Guid.NewGuid(), FirstName = "Dagobert", LastName = "Duck" },
+                new Address { Id = Guid.NewGuid(), FirstName = "Donald", LastName = "Duck" }
+            ];
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.GetAllAsync(
+                    null,
+                    null,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedAddresses);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.GetAllAsync();
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Equal(expectedAddresses, result);
+        }
+
     }
 }
