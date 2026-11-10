@@ -58,9 +58,14 @@ namespace AddressManagement.Application.Services
             return await _repository.UpdateAsync(address);
         }
 
+        /// <summary>
+        /// Löscht eine vorhandene Adresse anhand der angegebenen ID.
+        /// </summary>
+        /// <param name="addressId">Adress ID</param>
+        /// <returns>True - wenn das Löschen erfolgreich war</returns>
         public async Task<bool> DeleteAsync(Guid addressId)
         {
-            throw new NotImplementedException();
+            return await _repository.DeleteAsync(addressId);
         }
     }
 }
