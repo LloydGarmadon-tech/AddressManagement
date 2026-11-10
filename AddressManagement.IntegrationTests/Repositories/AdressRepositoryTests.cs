@@ -254,5 +254,39 @@ namespace AddressManagement.IntegrationTests.Repositories
             Assert.Equal("4711", result[0].PostalCode);
         }
 
+
+        /// <summary>
+        /// Prüft, ob bei einer Suche ohne Treffer eine leere
+        /// Liste anstelle von null zurückgegeben wird.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithNoMatchingAddresses_ShouldReturnEmptyList()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            await repository.CreateAsync(new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Duck",
+                City = "Entenhausen",
+                PostalCode = "12345"
+            });
+
+            // Act
+            var result = await repository.GetAllAsync("Hamburg", null);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+
     }
 }
