@@ -32,9 +32,15 @@ namespace AddressManagement.Infrastucture.Repositories
             await _context.SaveChangesAsync(cancellationToken);
         }
 
+        /// <summary>
+        /// Liest eine Adresse anhand ihrer ID aus dem Datenbestand.
+        /// Klärung : AsNoTracking, wenn die Adresse ohne Change-Tracking aus dem Datenbestand gelsen werden soll
+        /// </summary>
+        /// <param name="id">Adress ID</param>
+        /// <returns>Null, wenn keine Adresse gefunden wird. Sonst die Adresse</returns>
         public async Task<Address?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _context.Addresses.FindAsync(id);
         }
     }
 }
