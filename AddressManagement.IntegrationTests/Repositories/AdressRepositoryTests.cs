@@ -388,5 +388,30 @@ namespace AddressManagement.IntegrationTests.Repositories
         }
 
 
+        /// <summary>
+        /// Prüft, ob beim Löschen einer nicht vorhandenen
+        /// Adresse false zurückgegeben wird.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithUnknownAddress_ReturnFalseOnDelete()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            var unknownId = Guid.NewGuid();
+
+            // Act
+            var result = await repository.DeleteAsync(unknownId);
+
+            // Assert
+            Assert.False(result);
+            Assert.Empty(context.Addresses);
+        }
+
     }
 }
