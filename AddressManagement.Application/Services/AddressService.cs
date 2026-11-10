@@ -57,5 +57,10 @@ namespace AddressManagement.Application.Services
         {
             return await _repository.UpdateAsync(address);
         }
+
+        public async Task<bool> DeleteAsync(Guid addressId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

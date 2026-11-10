@@ -400,5 +400,40 @@ namespace AddressManagement.UnitTests.Services
                 Times.Once);
         }
 
+
+        /// <summary>
+        /// Prüft, ob das Löschen einer vorhandenen Adresse
+        /// erfolgreich durchgeführt.
+        /// </summary>
+        [Fact]
+        public async Task Test_DeleteWithExistingAddress_ReturnTrue()
+        {
+            // Arrange
+            var addressId = Guid.NewGuid();
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.DeleteAsync(
+                    addressId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.DeleteAsync(addressId);
+
+            // Assert
+            Assert.True(result);
+
+            repositoryMock.Verify(
+                r => r.DeleteAsync(
+                    addressId,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+
     }
 }
