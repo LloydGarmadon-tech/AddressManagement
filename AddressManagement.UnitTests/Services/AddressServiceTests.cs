@@ -355,5 +355,50 @@ namespace AddressManagement.UnitTests.Services
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }
+
+
+        /// <summary>
+        /// Prüft, ob beim Aktualisieren einer nicht vorhandenen Adresse
+        /// false zurückgegeben wird.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithUnknownAddress_ReturnFalse()
+        {
+            // Arrange
+            var address = new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Duck",
+                Street = "Ententeich",
+                HouseNumber = "11",
+                PostalCode = "4711",
+                City = "Entenhausen",
+                Country = "Deutschland"
+            };
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.UpdateAsync(
+                    address,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.UpdateAsync(address);
+
+            // Assert
+            Assert.False(result);
+
+            repositoryMock.Verify(
+                r => r.UpdateAsync(
+                    address,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
     }
 }
