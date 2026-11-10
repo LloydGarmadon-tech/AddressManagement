@@ -205,5 +205,54 @@ namespace AddressManagement.IntegrationTests.Repositories
             Assert.Equal("Entenhausen", result[0].City);
         }
 
+
+        /// <summary>
+        /// Prüft, ob für die Stadt und die Postleitzahl die passende Adressen zurückgegeben werden.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithCityAndPostalCodeFilters_ReturnMatchingAddresses()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            await repository.CreateAsync(new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                City = "Entenhausen",
+                PostalCode = "4711"
+            });
+
+            await repository.CreateAsync(new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Micky",
+                City = "Entenhausen",
+                PostalCode = "20095"
+            });
+
+            await repository.CreateAsync(new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Dagobert",
+                City = "Hamburg",
+                PostalCode = "21481"
+            });
+
+            // Act
+            var result = await repository.GetAllAsync("Entenhausen", "4711");
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("Donald", result[0].FirstName);
+            Assert.Equal("Entenhausen", result[0].City);
+            Assert.Equal("4711", result[0].PostalCode);
+        }
+
     }
 }
