@@ -3,5 +3,6 @@
   <Project Path="AddressManagement.Application/AddressManagement.Application.csproj" />
   <Project Path="AddressManagement.Domain/AddressManagement.Domain.csproj" />
   <Project Path="AddressManagement.Infrastucture/AddressManagement.Infrastucture.csproj" />
+  <Project Path="AddressManagement.IntegrationTests/AddressManagement.IntegrationTests.csproj" Id="e9e113a4-c4ad-416d-8254-1474ca9531fe" />
   <Project Path="AddressManagement.UnitTests/AddressManagement.UnitTests.csproj" />
 </Solution>
