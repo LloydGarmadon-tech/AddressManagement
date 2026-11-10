@@ -48,9 +48,14 @@ namespace AddressManagement.Application.Services
             return await _repository.GetAllAsync(city, postalcode);
         }
 
+        /// <summary>
+        /// Aktualisert eine vorhandene Adresse.
+        /// </summary>
+        /// <param name="address">Adresse</param>
+        /// <returns>True - wenn die Adresse erfolgreich aktualisiert wurde</returns>
         public async Task<bool> UpdateAsync(Address address)
         {
-            throw new NotImplementedException();
+            return await _repository.UpdateAsync(address);
         }
     }
 }

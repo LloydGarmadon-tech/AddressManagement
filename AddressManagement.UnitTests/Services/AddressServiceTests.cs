@@ -355,6 +355,5 @@ namespace AddressManagement.UnitTests.Services
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }
-
     }
 }
