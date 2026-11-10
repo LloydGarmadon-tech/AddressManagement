@@ -251,5 +251,67 @@ namespace AddressManagement.UnitTests.Services
                 Times.Once);
         }
 
+
+        /// <summary>
+        /// Prüft, ob beide Filter Stadt und Postleitzahl
+        /// korrekt an das Repository übergeben werden.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithCityAndPostalCodeFilters_ReturnMatchingAddresses()
+        {
+            // Arrange
+            const string city = "Entenhausen";
+            const string postalCode = "4711";
+
+            IReadOnlyList<Address> expectedAddresses =
+            [
+                new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Donald",
+                    LastName = "Duck",
+                    City = city,
+                    PostalCode = postalCode
+                },
+                new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Dagobert",
+                    LastName = "Duck",
+                    City = city,
+                    PostalCode = postalCode
+                }
+            ];
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.GetAllAsync(
+                    city,
+                    postalCode,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedAddresses);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.GetAllAsync(
+                city: city,
+                postalcode: postalCode);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.Equal(expectedAddresses, result);
+
+            repositoryMock.Verify(
+                r => r.GetAllAsync(
+                    city,
+                    postalCode,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+
     }
 }
