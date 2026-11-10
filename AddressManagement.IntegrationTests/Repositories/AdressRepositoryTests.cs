@@ -92,5 +92,31 @@ namespace AddressManagement.IntegrationTests.Repositories
             Assert.Equal(address.LastName, result.LastName);
         }
 
+
+
+        /// <summary>
+        /// Prüft, ob das Repository bei einer unbekannten
+        /// Adress-ID null zurückgibt.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithUnknownId_ReturnNull()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            var unknownId = Guid.NewGuid();
+
+            // Act
+            var result = await repository.GetByIdAsync(unknownId);
+
+            // Assert
+            Assert.Null(result);
+        }
+
     }
 }
