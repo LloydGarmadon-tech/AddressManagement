@@ -288,5 +288,53 @@ namespace AddressManagement.IntegrationTests.Repositories
         }
 
 
+        /// <summary>
+        /// Prüft, ob eine vorhandene Adresse erfolgreich
+        /// aktualisiert und gespeichert werden kann.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithExistingAddress_UpdateAddress()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            var address = new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Duck",
+                Street = "Ententeich",
+                HouseNumber = "11",
+                PostalCode = "12345",
+                City = "Entenhausen",
+                Country = "Deutschland"
+            };
+
+            await repository.CreateAsync(address);
+
+            address.Street = "Geldspeicherstraße";
+            address.HouseNumber = "1";
+            address.City = "Duckburg";
+
+            // Act
+            var result = await repository.UpdateAsync(address);
+
+            // Assert
+            Assert.True(result);
+
+            var updatedAddress = await context.Addresses
+                .AsNoTracking()
+                .SingleAsync(a => a.Id == address.Id);
+
+            Assert.Equal("Geldspeicherstraße", updatedAddress.Street);
+            Assert.Equal("1", updatedAddress.HouseNumber);
+            Assert.Equal("Duckburg", updatedAddress.City);
+        }
+
     }
 }

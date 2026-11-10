@@ -73,5 +73,10 @@ namespace AddressManagement.Infrastucture.Repositories
 
             return await query.ToListAsync(cancellationToken);
         }
+
+        public async Task<bool> UpdateAsync(Address address)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
