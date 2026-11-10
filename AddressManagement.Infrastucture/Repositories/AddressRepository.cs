@@ -100,9 +100,28 @@ namespace AddressManagement.Infrastucture.Repositories
             return true;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        /// <summary>
+        /// Sucht die Adresse anhand der ID und löscht sie aus dem Datenbestand.
+        /// </summary>
+        /// <param name="id">Adress ID</param>
+        /// <param name="cancellationToken">Token zum Abbrechen der Operation</param>
+        /// <returns>True - wenn die Adresse erfolgreich gelöscht wurde, false - sonst</returns>
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var address = await _context.Addresses.FindAsync(
+                new object[] { id },
+                cancellationToken);
+
+            if (address is null)
+            {
+                return false;
+            }
+
+            _context.Addresses.Remove(address);
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }
