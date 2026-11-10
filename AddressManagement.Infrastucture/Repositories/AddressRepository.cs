@@ -74,9 +74,30 @@ namespace AddressManagement.Infrastucture.Repositories
             return await query.ToListAsync(cancellationToken);
         }
 
-        public async Task<bool> UpdateAsync(Address address)
+        /// <summary>
+        /// Aktualisiert die bestehende Adresse, 
+        /// indem die Eigenschaften des Objektes auf die
+        /// bestehende Entität in der Datenbank übertragen wird.
+        /// </summary>
+        /// <param name="address">zu aktualisierende Adresse</param>
+        /// <param name="cancellationToken">Token zum Abbrechen der Operation</param>
+        /// <returns>True - wenn die Adresse erfolgreich aktualisiert wurde, false - sonst</returns>
+        public async Task<bool> UpdateAsync(Address address, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var existingAddress = await _context.Addresses.FindAsync(
+                new object[] { address.Id },
+                cancellationToken);
+
+            if (existingAddress is null)
+            {
+                return false;
+            }
+
+            _context.Entry(existingAddress).CurrentValues.SetValues(address);
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

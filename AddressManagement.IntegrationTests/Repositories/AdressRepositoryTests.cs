@@ -317,12 +317,20 @@ namespace AddressManagement.IntegrationTests.Repositories
 
             await repository.CreateAsync(address);
 
-            address.Street = "Geldspeicherstraße";
-            address.HouseNumber = "1";
-            address.City = "Duckburg";
+            var newAddress = new Address
+            {
+                Id = address.Id,
+                FirstName = address.FirstName,
+                LastName = address.LastName,
+                Street = "Geldspeicherstraße",
+                HouseNumber = "1",
+                PostalCode = address.PostalCode,
+                City = "Duckburg",
+                Country = address.Country
+            };
 
             // Act
-            var result = await repository.UpdateAsync(address);
+            var result = await repository.UpdateAsync(newAddress);
 
             // Assert
             Assert.True(result);
