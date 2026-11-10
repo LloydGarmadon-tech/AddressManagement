@@ -313,5 +313,48 @@ namespace AddressManagement.UnitTests.Services
         }
 
 
+        /// <summary>
+        /// Prüft, ob die Aktualisierung einer vorhandenen Adresse
+        /// erfolgreich durchgeführt wird.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithExistingAddress_ReturnTrue()
+        {
+            // Arrange
+            var address = new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Duck",
+                Street = "Ententeich",
+                HouseNumber = "11",
+                PostalCode = "4711",
+                City = "Entenhausen",
+                Country = "Deutschland"
+            };
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.UpdateAsync(
+                    address,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.UpdateAsync(address);
+
+            // Assert
+            Assert.True(result);
+
+            repositoryMock.Verify(
+                r => r.UpdateAsync(
+                    address,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
     }
 }

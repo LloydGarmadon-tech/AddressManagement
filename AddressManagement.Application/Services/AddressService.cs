@@ -47,5 +47,10 @@ namespace AddressManagement.Application.Services
         {
             return await _repository.GetAllAsync(city, postalcode);
         }
+
+        public async Task<bool> UpdateAsync(Address address)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
