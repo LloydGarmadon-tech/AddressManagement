@@ -192,5 +192,64 @@ namespace AddressManagement.UnitTests.Services
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }
+
+
+        /// <summary>
+        /// Prüft, ob bei Angabe einer Postleitzahl die passenden
+        /// Adressen aus dem Repository zurückgegeben werden.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithPostalCodeFilter_ReturnMatchingAddresses()
+        {
+            // Arrange
+            const string postalCode = "4711";
+
+            IReadOnlyList<Address> expectedAddresses =
+            [
+                new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Donald",
+                    LastName = "Duck",
+                    PostalCode = "4711",
+                    City = "Entenhausen"
+                },
+                new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Dagobert",
+                    LastName = "Duck",
+                    PostalCode = "4711",
+                    City = "Entenhausen"
+                }
+            ];
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.GetAllAsync(
+                    null,
+                    postalCode,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedAddresses);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.GetAllAsync(postalcode: postalCode);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.Equal(expectedAddresses, result);
+
+            repositoryMock.Verify(
+                r => r.GetAllAsync(
+                    null,
+                    postalCode,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
     }
 }
