@@ -31,5 +31,10 @@ namespace AddressManagement.Infrastucture.Repositories
             await _context.Addresses.AddAsync(address, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task<Address?> GetByIdAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

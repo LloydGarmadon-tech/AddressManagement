@@ -50,5 +50,47 @@ namespace AddressManagement.IntegrationTests.Repositories
             Assert.Equal(address.FirstName, savedAddress.FirstName);
             Assert.Equal(address.LastName, savedAddress.LastName);
         }
+
+
+        /// <summary>
+        /// Prüft, ob eine vorhandene Adresse anhand ihrer ID
+        /// aus dem Repository gelesen werden kann.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithExistingId_ReturnAddress()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            var address = new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Duck",
+                Street = "Ententeich",
+                HouseNumber = "11",
+                PostalCode = "4711",
+                City = "Entenhausen",
+                Country = "Deutschland"
+            };
+
+            await context.Addresses.AddAsync(address);
+            await context.SaveChangesAsync();
+
+            // Act
+            var result = await repository.GetByIdAsync(address.Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(address.Id, result.Id);
+            Assert.Equal(address.FirstName, result.FirstName);
+            Assert.Equal(address.LastName, result.LastName);
+        }
+
     }
 }
