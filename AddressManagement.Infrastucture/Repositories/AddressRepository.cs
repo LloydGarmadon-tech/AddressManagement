@@ -32,6 +32,7 @@ namespace AddressManagement.Infrastucture.Repositories
             await _context.SaveChangesAsync(cancellationToken);
         }
 
+
         /// <summary>
         /// Liest eine Adresse anhand ihrer ID aus dem Datenbestand.
         /// Klärung : AsNoTracking, wenn die Adresse ohne Change-Tracking aus dem Datenbestand gelsen werden soll
@@ -41,6 +42,11 @@ namespace AddressManagement.Infrastucture.Repositories
         public async Task<Address?> GetByIdAsync(Guid id)
         {
             return await _context.Addresses.FindAsync(id);
+        }
+
+        public async Task<IReadOnlyList<Address>> GetAllAsync(object value1, object value2)
+        {
+            throw new NotImplementedException();
         }
     }
 }

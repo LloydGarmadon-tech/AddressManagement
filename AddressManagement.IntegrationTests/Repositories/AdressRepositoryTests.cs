@@ -96,7 +96,7 @@ namespace AddressManagement.IntegrationTests.Repositories
 
         /// <summary>
         /// Prüft, ob das Repository bei einer unbekannten
-        /// Adress-ID null zurückgibt.
+        /// Adress ID null zurückgibt.
         /// </summary>
         [Fact]
         public async Task Test_WithUnknownId_ReturnNull()
@@ -116,6 +116,51 @@ namespace AddressManagement.IntegrationTests.Repositories
 
             // Assert
             Assert.Null(result);
+        }
+
+
+
+        /// <summary>
+        /// Prüft, ob das Repository ohne Filter
+        /// alle gespeicherten Adressen zurückliefert.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithoutFilters_ReturnAllAddresses()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            var address1 = new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Duck",
+                City = "Entenhausen"
+            };
+
+            var address2 = new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Dagobert",
+                LastName = "Duck",
+                City = "Entenhausen"
+            };
+
+            await repository.CreateAsync(address1);
+            await repository.CreateAsync(address2);
+
+            // Act
+            var result = await repository.GetAllAsync(null, null);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, a => a.Id == address1.Id);
+            Assert.Contains(result, a => a.Id == address2.Id);
         }
 
     }
