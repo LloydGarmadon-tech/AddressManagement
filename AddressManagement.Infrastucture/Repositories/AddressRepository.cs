@@ -99,5 +99,10 @@ namespace AddressManagement.Infrastucture.Repositories
 
             return true;
         }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

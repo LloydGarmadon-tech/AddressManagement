@@ -344,5 +344,49 @@ namespace AddressManagement.IntegrationTests.Repositories
             Assert.Equal("Duckburg", updatedAddress.City);
         }
 
+
+        /// <summary>
+        /// Prüft, ob eine vorhandene Adresse
+        /// aus dem Repository gelöscht werden kann.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithExistingAddress_ShouldDeleteAddress()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            var address = new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Duck",
+                Street = "Ententeich",
+                HouseNumber = "11",
+                PostalCode = "12345",
+                City = "Entenhausen",
+                Country = "Deutschland"
+            };
+
+            await repository.CreateAsync(address);
+
+            // Act
+            var result = await repository.DeleteAsync(address.Id);
+
+            // Assert
+            Assert.True(result);
+
+            var deletedAddress = await context.Addresses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == address.Id);
+
+            Assert.Null(deletedAddress);
+        }
+
+
     }
 }
