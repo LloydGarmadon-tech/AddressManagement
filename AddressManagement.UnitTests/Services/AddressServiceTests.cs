@@ -435,5 +435,39 @@ namespace AddressManagement.UnitTests.Services
         }
 
 
+        /// <summary>
+        /// Prüft, ob beim Löschen einer nicht vorhandenen Adresse
+        /// false zurückgegeben wird.
+        /// </summary>
+        [Fact]
+        public async Task Test_DeleteWithUnknownAddress_ReturnFalse()
+        {
+            // Arrange
+            var addressId = Guid.NewGuid();
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.DeleteAsync(
+                    addressId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.DeleteAsync(addressId);
+
+            // Assert
+            Assert.False(result);
+
+            repositoryMock.Verify(
+                r => r.DeleteAsync(
+                    addressId,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+
     }
 }
