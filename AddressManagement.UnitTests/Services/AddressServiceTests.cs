@@ -132,9 +132,65 @@ namespace AddressManagement.UnitTests.Services
             var result = await service.GetAllAsync();
 
             // Assert
+            Assert.NotNull(result);
             Assert.Equal(2, result.Count);
             Assert.Equal(expectedAddresses, result);
         }
 
+
+        /// <summary>
+        /// Prüft, ob bei Angabe eines Stadtfilters die passenden
+        /// Adressen zurückgegeben werden.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithCityFilter_ReturnMatchingAddresses()
+        {
+            // Arrange
+            const string city = "Entenhausen";
+
+            IReadOnlyList<Address> expectedAddresses =
+            [
+                new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Donald",
+                    LastName = "Duck",
+                    City = "Entenhausen"
+                },
+                new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = "Dagobert",
+                    LastName = "Duck",
+                    City = "Entenhausen"
+                }
+            ];
+
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.GetAllAsync(
+                    city,
+                    null,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedAddresses);
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            var result = await service.GetAllAsync(city: city);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.Equal(expectedAddresses, result);
+
+            repositoryMock.Verify(
+                r => r.GetAllAsync(
+                    city,
+                    null,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
     }
 }
