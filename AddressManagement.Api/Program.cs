@@ -36,3 +36,10 @@ app.MapControllers();
 
 app.Run();
 
+/// <summary>
+/// Einstiegspunkt der Anwendung für Integrationstests.
+/// </summary>
+public partial class Program
+{
+}
+
