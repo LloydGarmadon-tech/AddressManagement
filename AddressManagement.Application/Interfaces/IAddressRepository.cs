@@ -9,7 +9,7 @@ namespace AddressManagement.Application.Interfaces
     public interface IAddressRepository
     {
 
-        Task AddAsync(
+        Task CreateAsync(
             Address address,
             CancellationToken cancellationToken = default);
 

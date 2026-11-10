@@ -1,4 +1,5 @@
-﻿using AddressManagement.Domain.Entities;
+﻿using AddressManagement.Application.Interfaces;
+using AddressManagement.Domain.Entities;
 using AddressManagement.Infrastucture.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +8,7 @@ namespace AddressManagement.Infrastucture.Repositories
     /// <summary>
     /// Implementiert den Datenzugriff für Adressen.
     /// </summary>
-    public class AddressRepository
+    public class AddressRepository : IAddressRepository
     {
         private readonly AdressDbContext _context;
 
@@ -40,9 +41,9 @@ namespace AddressManagement.Infrastucture.Repositories
         /// </summary>
         /// <param name="id">Adress ID</param>
         /// <returns>Null, wenn keine Adresse gefunden wird. Sonst die Adresse</returns>
-        public async Task<Address?> GetByIdAsync(Guid id)
+        public async Task<Address?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _context.Addresses.FindAsync(id);
+            return await _context.Addresses.FindAsync([id], cancellationToken);
         }
 
         /// <summary>

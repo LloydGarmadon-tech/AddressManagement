@@ -23,7 +23,7 @@ namespace AddressManagement.Application.Services
         public async Task<Address> CreateAsync(Address address)
         {
             address.Id = Guid.NewGuid();
-            await _repository.AddAsync(address);
+            await _repository.CreateAsync(address);
             return address;
         }
 
