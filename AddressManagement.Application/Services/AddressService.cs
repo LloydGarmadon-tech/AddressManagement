@@ -37,9 +37,15 @@ namespace AddressManagement.Application.Services
             return await _repository.GetByIdAsync(addressId);
         }
 
-        public async Task<IReadOnlyList<Address>?> GetAllAsync()
+        /// <summary>
+        /// Ruft alle Adressen ab, optional gefiltert nach Stadt und/oder Postleitzahl.
+        /// </summary>
+        /// <param name="city">optionaler Filter nach Stadt</param>
+        /// <param name="postalcode">optionaler Filter nach Postleitzahl</param>
+        /// <returns>Eine Liste aller gefundenen Adressen.</returns>
+        public async Task<IReadOnlyList<Address>?> GetAllAsync(string? city = null, string? postalcode = null)
         {
-            throw new NotImplementedException();
+            return await _repository.GetAllAsync(city, postalcode);
         }
     }
 }
