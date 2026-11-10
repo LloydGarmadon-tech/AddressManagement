@@ -163,5 +163,47 @@ namespace AddressManagement.IntegrationTests.Repositories
             Assert.Contains(result, a => a.Id == address2.Id);
         }
 
+
+
+        /// <summary>
+        /// Prüft, ob ausschließlich Adressen aus der angegebenen
+        /// Stadt zurückgegeben werden.
+        /// </summary>
+        [Fact]
+        public async Task Test_WithCityFilter_ReturnOnlyMatchingAddresses()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            await repository.CreateAsync(new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Duck",
+                City = "Entenhausen"
+            });
+
+            await repository.CreateAsync(new Address
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Micky",
+                LastName = "Maus",
+                City = "Maushausen"
+            });
+
+            // Act
+            var result = await repository.GetAllAsync("Entenhausen", null);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("Donald", result[0].FirstName);
+            Assert.Equal("Entenhausen", result[0].City);
+        }
+
     }
 }
