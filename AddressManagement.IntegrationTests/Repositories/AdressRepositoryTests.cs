@@ -39,7 +39,7 @@ namespace AddressManagement.IntegrationTests.Repositories
             };
 
             // Act
-            await repository.AddAsync(address);
+            await repository.CreateAsync(address);
 
             // Assert
             var savedAddress = await context.Addresses

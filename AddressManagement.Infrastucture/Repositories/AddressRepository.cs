@@ -24,11 +24,12 @@ namespace AddressManagement.Infrastucture.Repositories
         /// </summary>
         /// <param name="address">Die zu speichernde Adresse.</param>
         /// <param name="cancellationToken">Token zum Abbrechen der Operation.</param>
-        public Task AddAsync(
+        public async Task CreateAsync(
             Address address,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await _context.Addresses.AddAsync(address, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }
