@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AddressManagement.Application\AddressManagement.Application.csproj" />
     <ProjectReference Include="..\AddressManagement.Infrastucture\AddressManagement.Infrastucture.csproj" />
   </ItemGroup>
