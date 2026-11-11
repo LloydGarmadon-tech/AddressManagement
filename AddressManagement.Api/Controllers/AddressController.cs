@@ -37,4 +37,30 @@ public class AddressesController : ControllerBase
             $"/api/addresses/{createdAddress.Id}",
             createdAddress);
     }
+
+
+    /// <summary>
+    /// Ruft eine Adresse anhand ihrer eindeutigen ID ab.
+    /// </summary>
+    /// <param name="id">Die eindeutige ID der Adresse.</param>
+    /// <returns>
+    /// HTTP 200 mit der gefundenen Adresse oder
+    /// HTTP 404, wenn die Adresse nicht existiert.
+    /// </returns>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<Address>> GetByIdAsync(Guid id)
+    {
+        var address = await _addressService.GetByIdAsync(id);
+
+        if (address is null)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Adresse nicht gefunden",
+                detail: $"Die Adresse mit der ID {id} existiert nicht.");
+        }
+
+        return Ok(address);
+    }
+
 }
