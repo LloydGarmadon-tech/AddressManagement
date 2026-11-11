@@ -51,4 +51,55 @@ public class AddressControllerTests
             $"/api/addresses/{createdAddress.Id}",
             response.Headers.Location.ToString());
     }
+
+
+    /// <summary>
+    /// Prüft, ob eine vorhandene Adresse anhand ihrer ID
+    /// über die REST-API abgerufen werden kann.
+    /// </summary>
+    [Fact]
+    public async Task Test_WithExistingId_ReturnAddress()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var address = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "Ententeich",
+            HouseNumber = "11",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland"
+        };
+
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/addresses",
+            address);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var createdAddress =
+            await createResponse.Content.ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(createdAddress);
+
+        // Act
+        var response = await client.GetAsync(
+            $"/api/addresses/{createdAddress.Id}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var retrievedAddress =
+            await response.Content.ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(retrievedAddress);
+        Assert.Equal(createdAddress.Id, retrievedAddress.Id);
+        Assert.Equal("Donald", retrievedAddress.FirstName);
+        Assert.Equal("Duck", retrievedAddress.LastName);
+    }
+
 }
