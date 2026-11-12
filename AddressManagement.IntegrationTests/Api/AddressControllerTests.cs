@@ -243,4 +243,63 @@ public class AddressControllerTests
         Assert.All(addresses, a => Assert.Equal("Entenhausen", a.City));
     }
 
+
+
+    /// <summary>
+    /// Prüft, ob der GET-Endpunkt ausschließlich Adressen
+    /// mit der angegebenen Postleitzahl zurückliefert.
+    /// </summary>
+    [Fact]
+    public async Task Test_WithPostalCodeFilter_ReturnMatchingAddresses()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var matchingAddress = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            City = "Lauenburg",
+            PostalCode = "21481"
+        };
+
+        var otherAddress = new Address
+        {
+            FirstName = "Micky",
+            LastName = "Maus",
+            City = "Hamburg",
+            PostalCode = "20095"
+        };
+
+        var createResponse1 = await client.PostAsJsonAsync(
+            "/api/addresses", matchingAddress);
+
+        var createResponse2 = await client.PostAsJsonAsync(
+            "/api/addresses", otherAddress);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse1.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, createResponse2.StatusCode);
+
+        var createdAddress = await createResponse1.Content
+            .ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(createdAddress);
+
+        // Act
+        var response = await client.GetAsync(
+            "/api/addresses?postalCode=21481");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var addresses = await response.Content
+            .ReadFromJsonAsync<List<Address>>();
+
+        Assert.NotNull(addresses);
+        Assert.Contains(addresses, a => a.Id == createdAddress.Id);
+        Assert.All(addresses,
+            a => Assert.Equal("21481", a.PostalCode));
+    }
+
 }
