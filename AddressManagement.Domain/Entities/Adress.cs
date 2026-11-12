@@ -9,6 +9,7 @@ namespace AddressManagement.Domain.Entities
         public string FirstName { get; set; } = string.Empty;
         [Required(ErrorMessage = "Nachname ist erforderlich.")]
         public string LastName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Straße ist erforderlich.")]
         public string Street { get; set; } = string.Empty;
         public string HouseNumber { get; set; } = string.Empty;
         public string PostalCode { get; set; } = string.Empty;
