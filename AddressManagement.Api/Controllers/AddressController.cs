@@ -85,4 +85,35 @@ public class AddressesController : ControllerBase
         return Ok(addresses);
     }
 
+
+    /// <summary>
+    /// Aktualisiert eine vorhandene Adresse.
+    /// </summary>
+    /// <param name="id">ID der zu aktualisierenden Adresse.</param>
+    /// <param name="address">Die neuen Adressdaten.</param>
+    /// <returns>
+    /// HTTP 204 bei erfolgreicher Aktualisierung.
+    /// HTTP 404, wenn die Adresse nicht existiert.
+    /// </returns>
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateAsync(
+        Guid id,
+        [FromBody] Address address)
+    {
+        // Die ID aus der URL ist maßgeblich, falls sie von der im JSON-Body abweicht.
+        address.Id = id;
+
+        var updated = await _addressService.UpdateAsync(address);
+
+        if (!updated)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Adresse nicht gefunden",
+                detail: $"Die Adresse mit der ID {id} existiert nicht.");
+        }
+
+        return NoContent();
+    }
+
 }
