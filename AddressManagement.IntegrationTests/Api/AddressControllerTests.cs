@@ -137,4 +137,52 @@ public class AddressControllerTests
         Assert.Contains(unknownId.ToString(), problem.Detail);
     }
 
+    /// <summary>
+    /// Prüft, ob alle vorhandenen Adressen über die
+    /// REST-API abgerufen werden können.
+    /// </summary>
+    [Fact]
+    public async Task Test_WithoutFilters_ReturnAllAddresses()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var address1 = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            City = "Entenhausen"
+        };
+
+        var address2 = new Address
+        {
+            FirstName = "Micky",
+            LastName = "Maus",
+            City = "Maushausen"
+        };
+
+        var response1 = await client.PostAsJsonAsync(
+            "/api/addresses", address1);
+
+        var response2 = await client.PostAsJsonAsync(
+            "/api/addresses", address2);
+
+        Assert.Equal(HttpStatusCode.Created, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response2.StatusCode);
+
+        // Act
+        var response = await client.GetAsync("/api/addresses");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var addresses = await response.Content
+            .ReadFromJsonAsync<List<Address>>();
+
+        Assert.NotNull(addresses);
+        Assert.Contains(addresses, a => a.FirstName == "Donald");
+        Assert.Contains(addresses, a => a.FirstName == "Micky");
+    }
+
 }
