@@ -1,4 +1,5 @@
 ﻿using AddressManagement.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -100,6 +101,40 @@ public class AddressControllerTests
         Assert.Equal(createdAddress.Id, retrievedAddress.Id);
         Assert.Equal("Donald", retrievedAddress.FirstName);
         Assert.Equal("Duck", retrievedAddress.LastName);
+    }
+
+
+    /// <summary>
+    /// Prüft, ob bei einer unbekannten Adress-ID
+    /// HTTP 404 mit einer Problem-Details-Antwort zurückgegeben wird.
+    /// </summary>
+    [Fact]
+    public async Task Test_WithUnknownId_ReturnNotFoundProblemDetails()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var unknownId = Guid.NewGuid();
+
+        // Act
+        var response = await client.GetAsync(
+            $"/api/addresses/{unknownId}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        Assert.Equal(
+            "application/problem+json",
+            response.Content.Headers.ContentType?.MediaType);
+
+        var problem = await response.Content
+            .ReadFromJsonAsync<ProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal(404, problem.Status);
+        Assert.Equal("Adresse nicht gefunden", problem.Title);
+        Assert.Contains(unknownId.ToString(), problem.Detail);
     }
 
 }
