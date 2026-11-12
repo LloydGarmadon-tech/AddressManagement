@@ -445,4 +445,51 @@ public class AddressControllerTests
         Assert.Equal("Duckburg", savedAddress.City);
     }
 
+
+
+    /// <summary>
+    /// Prüft, ob beim Aktualisieren einer nicht vorhandenen
+    /// Adresse HTTP 404 mit Problem Details zurückgegeben wird.
+    /// </summary>
+    [Fact]
+    public async Task Test_UpdateWithUnknownId_ReturnNotFoundProblemDetails()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var unknownId = Guid.NewGuid();
+
+        var address = new Address
+        {
+            Id = unknownId,
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "Entenstraße",
+            HouseNumber = "1",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland"
+        };
+
+        // Act
+        var response = await client.PutAsJsonAsync(
+            $"/api/addresses/{unknownId}", address);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        Assert.Equal(
+            "application/problem+json",
+            response.Content.Headers.ContentType?.MediaType);
+
+        var problem = await response.Content
+            .ReadFromJsonAsync<ProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal(404, problem.Status);
+        Assert.Equal("Adresse nicht gefunden", problem.Title);
+        Assert.Contains(unknownId.ToString(), problem.Detail);
+    }
+
 }
