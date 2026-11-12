@@ -7,6 +7,7 @@ namespace AddressManagement.Domain.Entities
         public Guid Id { get; set; }
         [Required(ErrorMessage = "Vorname ist erforderlich.")]
         public string FirstName { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Nachname ist erforderlich.")]
         public string LastName { get; set; } = string.Empty;
         public string Street { get; set; } = string.Empty;
         public string HouseNumber { get; set; } = string.Empty;
