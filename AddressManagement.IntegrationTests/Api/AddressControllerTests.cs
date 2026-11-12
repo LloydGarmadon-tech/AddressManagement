@@ -622,4 +622,47 @@ public class AddressControllerTests
         Assert.Contains("LastName", problem.Errors.Keys);
     }
 
+
+    /// <summary>
+    /// Prüft, ob eine Adresse ohne Straße
+    /// mit HTTP 400 abgelehnt wird.
+    /// </summary>
+    [Fact]
+    public async Task Test_CreateWithoutStreet_ReturnBadRequest()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var address = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "",
+            HouseNumber = "1",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(
+            "/api/addresses", address);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        Assert.Equal(
+            "application/problem+json",
+            response.Content.Headers.ContentType?.MediaType);
+
+        var problem = await response.Content
+            .ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal(400, problem.Status);
+        Assert.Contains("Street", problem.Errors.Keys);
+    }
+
+
 }
