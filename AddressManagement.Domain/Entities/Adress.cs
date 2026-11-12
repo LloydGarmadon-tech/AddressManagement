@@ -13,6 +13,7 @@ namespace AddressManagement.Domain.Entities
         public string Street { get; set; } = string.Empty;
         [Required(ErrorMessage = "Hausnummer ist erforderlich.")]
         public string HouseNumber { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Postleitzahl ist erforderlich.")]
         public string PostalCode { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
