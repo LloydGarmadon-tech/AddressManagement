@@ -492,4 +492,50 @@ public class AddressControllerTests
         Assert.Contains(unknownId.ToString(), problem.Detail);
     }
 
+
+    /// <summary>
+    /// Prüft, ob eine vorhandene Adresse über den
+    /// DELETE-Endpunkt gelöscht werden kann.
+    /// </summary>
+    [Fact]
+    public async Task Test_WithExistingAddress_DeleteAddress()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var address = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "Entenstraße",
+            HouseNumber = "1",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland"
+        };
+
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/addresses", address);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var createdAddress = await createResponse.Content
+            .ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(createdAddress);
+
+        // Act
+        var response = await client.DeleteAsync(
+            $"/api/addresses/{createdAddress.Id}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+        var getResponse = await client.GetAsync(
+            $"/api/addresses/{createdAddress.Id}");
+
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+    }
+
 }
