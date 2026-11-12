@@ -377,4 +377,72 @@ public class AddressControllerTests
         });
     }
 
+
+    /// <summary>
+    /// Aktualisiert eine vorhandene Adresse
+    /// </summary>
+    [Fact]
+    public async Task Test_WithExistingAddress_UpdateAddress()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var address = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "Entenstraße",
+            HouseNumber = "1",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland"
+        };
+
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/addresses", address);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var createdAddress = await createResponse.Content
+            .ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(createdAddress);
+
+        var updatedAddress = new Address
+        {
+            Id = createdAddress.Id,
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "Geldspeicherstraße",
+            HouseNumber = "10",
+            PostalCode = "54321",
+            City = "Duckburg",
+            Country = "Deutschland"
+        };
+
+        // Act
+        var response = await client.PutAsJsonAsync(
+            $"/api/addresses/{createdAddress.Id}",
+            updatedAddress);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+        var getResponse = await client.GetAsync(
+            $"/api/addresses/{createdAddress.Id}");
+
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+
+        var savedAddress = await getResponse.Content
+            .ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(savedAddress);
+        Assert.Equal(createdAddress.Id, savedAddress.Id);
+        Assert.Equal("Geldspeicherstraße", savedAddress.Street);
+        Assert.Equal("10", savedAddress.HouseNumber);
+        Assert.Equal("54321", savedAddress.PostalCode);
+        Assert.Equal("Duckburg", savedAddress.City);
+    }
+
 }
