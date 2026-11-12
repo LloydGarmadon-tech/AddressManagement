@@ -63,4 +63,26 @@ public class AddressesController : ControllerBase
         return Ok(address);
     }
 
+
+
+    /// <summary>
+    /// Gibt alle gespeicherten Adressen zurück.
+    /// Optional kann nach Stadt und Postleitzahl gefiltert werden.
+    /// </summary>
+    /// <param name="city">Optionale Stadt.</param>
+    /// <param name="postalCode">Optionale Postleitzahl.</param>
+    /// <returns>
+    /// HTTP 200 mit einer Liste der passenden Adressen.
+    /// Bei fehlenden Treffern wird eine leere Liste zurückgegeben.
+    /// </returns>
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyList<Address>>> GetAllAsync(
+        [FromQuery] string? city,
+        [FromQuery] string? postalCode)
+    {
+        var addresses = await _addressService.GetAllAsync(city, postalCode);
+
+        return Ok(addresses);
+    }
+
 }
