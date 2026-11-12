@@ -116,4 +116,31 @@ public class AddressesController : ControllerBase
         return NoContent();
     }
 
+
+    /// <summary>
+    /// Löscht eine vorhandene Adresse anhand ihrer ID.
+    /// </summary>
+    /// <param name="id">ID der zu löschenden Adresse.</param>
+    /// <returns>
+    /// HTTP 204 bei erfolgreicher Löschung.
+    /// HTTP 404, wenn die Adresse nicht existiert.
+    /// </returns>
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteAsync(Guid id)
+    {
+        // Adresse über den Service löschen.
+        var deleted = await _addressService.DeleteAsync(id);
+
+        if (!deleted)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Adresse nicht gefunden",
+                detail: $"Die Adresse mit der ID {id} existiert nicht.");
+        }
+
+        return NoContent();
+    }
+
+
 }
