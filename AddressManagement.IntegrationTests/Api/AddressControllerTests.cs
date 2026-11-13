@@ -914,4 +914,82 @@ public class AddressControllerTests
         Assert.Null(createdAddress.Email);
     }
 
+
+    /// <summary>
+    /// Prüft, ob die Aktualisierung einer Adresse ohne Nachnamen
+    /// mit HTTP 400 abgelehnt wird und die ursprünglichen Daten erhalten bleiben.
+    /// </summary>
+    [Fact]
+    public async Task Test_UpdateWithoutLastName_ReturnBadRequest()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var address = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "Entenstraße",
+            HouseNumber = "1",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland"
+        };
+
+        var createResponse = await client.PostAsJsonAsync(
+            "/api/addresses", address);
+
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var createdAddress = await createResponse.Content
+            .ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(createdAddress);
+
+        var invalidAddress = new Address
+        {
+            Id = createdAddress.Id,
+            FirstName = "Donald",
+            LastName = "",
+            Street = "Neue Straße",
+            HouseNumber = "10",
+            PostalCode = "54321",
+            City = "Duckburg",
+            Country = "Deutschland"
+        };
+
+        // Act
+        var response = await client.PutAsJsonAsync(
+            $"/api/addresses/{createdAddress.Id}",
+            invalidAddress);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        Assert.Equal(
+            "application/problem+json",
+            response.Content.Headers.ContentType?.MediaType);
+
+        var problem = await response.Content
+            .ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal(400, problem.Status);
+        Assert.Contains("LastName", problem.Errors.Keys);
+
+        // Prüfen, ob die ursprüngliche Adresse unverändert geblieben ist.
+        var getResponse = await client.GetAsync(
+            $"/api/addresses/{createdAddress.Id}");
+
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+
+        var savedAddress = await getResponse.Content
+            .ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(savedAddress);
+        Assert.Equal("Duck", savedAddress.LastName);
+        Assert.Equal("Entenstraße", savedAddress.Street);
+    }
+
 }
