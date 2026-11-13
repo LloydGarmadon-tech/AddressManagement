@@ -19,7 +19,7 @@ namespace AddressManagement.Domain.Entities
         public string City { get; set; } = string.Empty;
         [Required(ErrorMessage = "Land ist erforderlich.")]
         public string Country { get; set; } = string.Empty;
-
+        [EmailAddress(ErrorMessage = "Ungültige E-Mail-Adresse.")]
         public string? Email { get; set; }
     }
 }
