@@ -17,6 +17,7 @@ namespace AddressManagement.Domain.Entities
         public string PostalCode { get; set; } = string.Empty;
         [Required(ErrorMessage = "Stadt ist erforderlich.")]
         public string City { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Land ist erforderlich.")]
         public string Country { get; set; } = string.Empty;
 
         public string? Email { get; set; }
