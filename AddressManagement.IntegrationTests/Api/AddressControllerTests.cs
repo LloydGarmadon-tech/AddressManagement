@@ -833,4 +833,46 @@ public class AddressControllerTests
     }
 
 
+    /// <summary>
+    /// Prüft, ob eine Adresse mit ungültigem E-Mail-Format
+    /// mit HTTP 400 abgelehnt wird.
+    /// </summary>
+    [Fact]
+    public async Task Test_CreateWithInvalidEmail_ReturnBadRequest()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var address = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "Entenstraße",
+            HouseNumber = "1",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland",
+            Email = "donald.entenhausen.de"
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(
+            "/api/addresses", address);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        Assert.Equal(
+            "application/problem+json",
+            response.Content.Headers.ContentType?.MediaType);
+
+        var problem = await response.Content
+            .ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal(400, problem.Status);
+        Assert.Contains("Email", problem.Errors.Keys);
+    }
+
 }
