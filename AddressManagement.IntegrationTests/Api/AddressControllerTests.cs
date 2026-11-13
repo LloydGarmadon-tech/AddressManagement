@@ -875,4 +875,43 @@ public class AddressControllerTests
         Assert.Contains("Email", problem.Errors.Keys);
     }
 
+
+    /// <summary>
+    /// Prüft, ob eine Adresse ohne E-Mail-Adresse
+    /// erfolgreich erstellt werden kann.
+    /// </summary>
+    [Fact]
+    public async Task Test_CreateWithoutEmail_ReturnCreated()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        var address = new Address
+        {
+            FirstName = "Donald",
+            LastName = "Duck",
+            Street = "Entenstraße",
+            HouseNumber = "1",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland",
+            Email = null
+        };
+
+        // Act
+        var response = await client.PostAsJsonAsync(
+            "/api/addresses", address);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        var createdAddress = await response.Content
+            .ReadFromJsonAsync<Address>();
+
+        Assert.NotNull(createdAddress);
+        Assert.NotEqual(Guid.Empty, createdAddress.Id);
+        Assert.Null(createdAddress.Email);
+    }
+
 }
