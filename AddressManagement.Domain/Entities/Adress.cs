@@ -15,6 +15,7 @@ namespace AddressManagement.Domain.Entities
         public string HouseNumber { get; set; } = string.Empty;
         [Required(ErrorMessage = "Postleitzahl ist erforderlich.")]
         public string PostalCode { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Stadt ist erforderlich.")]
         public string City { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
 
