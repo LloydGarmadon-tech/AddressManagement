@@ -54,7 +54,7 @@ public class AddressesController : ControllerBase
     /// HTTP 404, wenn die Adresse nicht existiert.
     /// </returns>
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<Address>> GetByIdAsync(Guid id)
+    public async Task<ActionResult<AddressResponse>> GetByIdAsync(Guid id)
     {
         var address = await _addressService.GetByIdAsync(id);
 
@@ -66,7 +66,9 @@ public class AddressesController : ControllerBase
                 detail: $"Die Adresse mit der ID {id} existiert nicht.");
         }
 
-        return Ok(address);
+        var response = AddressMapper.ToResponse(address);
+
+        return Ok(response);
     }
 
 
@@ -81,15 +83,21 @@ public class AddressesController : ControllerBase
     /// HTTP 200 mit einer Liste der passenden Adressen.
     /// Bei fehlenden Treffern wird eine leere Liste zurückgegeben.
     /// </returns>
+
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Address>>> GetAllAsync(
+    public async Task<ActionResult<IReadOnlyList<AddressResponse>>> GetAllAsync(
         [FromQuery] string? city,
         [FromQuery] string? postalCode)
     {
         var addresses = await _addressService.GetAllAsync(city, postalCode);
 
-        return Ok(addresses);
+        var response = addresses
+            .Select(AddressMapper.ToResponse)
+            .ToList();
+
+        return Ok(response);
     }
+
 
 
     /// <summary>
