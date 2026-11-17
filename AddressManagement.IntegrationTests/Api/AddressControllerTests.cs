@@ -152,14 +152,22 @@ public class AddressControllerTests
         {
             FirstName = "Donald",
             LastName = "Duck",
-            City = "Entenhausen"
+            Street = "Ententeich",
+            HouseNumber = "11",
+            PostalCode = "12345",
+            City = "Entenhausen",
+            Country = "Deutschland"
         };
 
         var address2 = new Address
         {
             FirstName = "Micky",
             LastName = "Maus",
-            City = "Maushausen"
+            Street = "Mausstraße",
+            HouseNumber = "1",
+            PostalCode = "54321",
+            City = "Maushausen",
+            Country = "Deutschland"
         };
 
         var response1 = await client.PostAsJsonAsync(
@@ -202,16 +210,22 @@ public class AddressControllerTests
         {
             FirstName = "Donald",
             LastName = "Duck",
+            Street = "Ententeich",
+            HouseNumber = "11",
             City = "Entenhausen",
-            PostalCode = "12345"
+            PostalCode = "12345",
+            Country = "Deutschland"
         };
 
         var otherAddress = new Address
         {
             FirstName = "Micky",
             LastName = "Maus",
+            Street = "Mausstraße",
+            HouseNumber = "1",
             City = "Maushausen",
-            PostalCode = "54321"
+            PostalCode = "54321",
+            Country = "Deutschland"
         };
 
         var createResponse1 = await client.PostAsJsonAsync(
@@ -260,16 +274,22 @@ public class AddressControllerTests
         {
             FirstName = "Donald",
             LastName = "Duck",
+            Street = "Ententeich",
+            HouseNumber = "11",
             City = "Lauenburg",
-            PostalCode = "21481"
+            PostalCode = "21481",
+            Country = "Deutschland"
         };
 
         var otherAddress = new Address
         {
             FirstName = "Micky",
             LastName = "Maus",
+            Street = "Mausstraße",
+            HouseNumber = "1",
             City = "Hamburg",
-            PostalCode = "20095"
+            PostalCode = "20095",
+            Country = "Deutschland"
         };
 
         var createResponse1 = await client.PostAsJsonAsync(
@@ -314,29 +334,42 @@ public class AddressControllerTests
         await using var factory = new WebApplicationFactory<Program>();
         using var client = factory.CreateClient();
 
+
         var matchingAddress = new Address
         {
             FirstName = "Donald",
             LastName = "Duck",
+            Street = "Entenstraße",
+            HouseNumber = "1",
             City = "Lauenburg",
-            PostalCode = "21481"
+            PostalCode = "21481",
+            Country = "Deutschland"
         };
+
 
         var wrongPostalCode = new Address
         {
             FirstName = "Micky",
             LastName = "Maus",
+            Street = "Mausstraße",
+            HouseNumber = "1",
             City = "Lauenburg",
-            PostalCode = "20095"
+            PostalCode = "20095",
+            Country = "Deutschland"
         };
+
 
         var wrongCity = new Address
         {
             FirstName = "Dagobert",
             LastName = "Duck",
+            Street = "Geldspeicherstraße",
+            HouseNumber = "10",
             City = "Hamburg",
-            PostalCode = "21481"
+            PostalCode = "21481",
+            Country = "Deutschland"
         };
+
 
         var createResponse1 = await client.PostAsJsonAsync(
             "/api/addresses", matchingAddress);

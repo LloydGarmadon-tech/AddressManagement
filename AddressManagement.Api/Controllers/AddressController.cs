@@ -1,4 +1,6 @@
-﻿using AddressManagement.Application.Services;
+﻿using AddressManagement.Api.DTOs;
+using AddressManagement.Api.Mapping;
+using AddressManagement.Application.Services;
 using AddressManagement.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,16 +29,20 @@ public class AddressesController : ControllerBase
     /// </summary>
     /// <param name="address">Die anzulegende Adresse.</param>
     /// <returns>HTTP 201 Created mit der erstellten Adresse.</returns>
+
     [HttpPost]
-    public async Task<ActionResult<Address>> CreateAsync(
-        [FromBody] Address address)
+    public async Task<ActionResult<AddressResponse>> CreateAsync(
+        [FromBody] CreateAddressRequest request)
     {
+        var address = AddressMapper.ToAddress(request);
+
         var createdAddress = await _addressService.CreateAsync(address);
 
-        return Created(
-            $"/api/addresses/{createdAddress.Id}",
-            createdAddress);
+        var response = AddressMapper.ToResponse(createdAddress);
+
+        return Created($"/api/addresses/{response.Id}", response);
     }
+
 
 
     /// <summary>
