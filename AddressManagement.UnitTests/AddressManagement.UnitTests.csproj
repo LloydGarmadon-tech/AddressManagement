@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AddressManagement.Api\AddressManagement.Api.csproj" />
     <ProjectReference Include="..\AddressManagement.Application\AddressManagement.Application.csproj" />
     <ProjectReference Include="..\AddressManagement.Domain\AddressManagement.Domain.csproj" />
   </ItemGroup>
