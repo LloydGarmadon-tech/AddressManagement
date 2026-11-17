@@ -1,4 +1,5 @@
 ﻿using AddressManagement.Api.DTOs;
+using AddressManagement.Api.Mapping;
 
 namespace AddressManagement.UnitTests.Mapping
 {
