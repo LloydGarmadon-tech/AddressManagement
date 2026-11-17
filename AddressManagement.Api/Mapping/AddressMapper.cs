@@ -49,4 +49,26 @@ public static class AddressMapper
             Email = request.Email
         };
     }
+
+
+    /// <summary>
+    /// Wandelt eine Address-Entität in ein
+    /// AddressResponse-DTO um.
+    /// </summary>
+    public static AddressResponse ToResponse(Address address)
+    {
+        return new AddressResponse
+        {
+            Id = address.Id,
+            FirstName = address.FirstName,
+            LastName = address.LastName,
+            Street = address.Street,
+            HouseNumber = address.HouseNumber,
+            PostalCode = address.PostalCode,
+            City = address.City,
+            Country = address.Country,
+            Email = address.Email
+        };
+    }
+
 }
