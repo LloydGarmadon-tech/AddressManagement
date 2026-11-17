@@ -28,4 +28,25 @@ public static class AddressMapper
             Email = request.Email
         };
     }
+
+
+    /// <summary>
+    /// Wandelt einen UpdateAddressRequest in eine
+    /// Address-Entität mit der angegebenen ID um.
+    /// </summary>
+    public static Address ToAddress(UpdateAddressRequest request, Guid id)
+    {
+        return new Address
+        {
+            Id = id,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Street = request.Street,
+            HouseNumber = request.HouseNumber,
+            PostalCode = request.PostalCode,
+            City = request.City,
+            Country = request.Country,
+            Email = request.Email
+        };
+    }
 }
