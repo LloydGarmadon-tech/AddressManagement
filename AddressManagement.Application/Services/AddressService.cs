@@ -48,6 +48,33 @@ namespace AddressManagement.Application.Services
             return await _repository.GetAllAsync(city, postalcode);
         }
 
+
+        /// <summary>
+        /// Gibt Adressen seitenweise zurück.
+        /// Optional kann nach Stadt und Postleitzahl gefiltert werden.
+        /// </summary>
+        /// <param name="city">Optionaler Stadtfilter.</param>
+        /// <param name="postalCode">Optionaler Postleitzahlfilter.</param>
+        /// <param name="page">Seitennummer, beginnend bei 1.</param>
+        /// <param name="pageSize">Anzahl der Adressen pro Seite.</param>
+        /// <param name="cancellationToken">Token zum Abbrechen der Operation.</param>
+        /// <returns>Die Adressen der angeforderten Seite.</returns>
+        public async Task<IReadOnlyList<Address>> GetAllAsync(
+            string? city,
+            string? postalCode,
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken = default)
+        {
+            return await _repository.GetAllAsync(
+                city,
+                postalCode,
+                page,
+                pageSize,
+                cancellationToken);
+        }
+
+
         /// <summary>
         /// Aktualisert eine vorhandene Adresse.
         /// </summary>
