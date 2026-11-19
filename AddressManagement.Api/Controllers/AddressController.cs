@@ -1,6 +1,7 @@
 ﻿using AddressManagement.Api.DTOs;
 using AddressManagement.Api.Mapping;
 using AddressManagement.Application.Services;
+using AddressManagement.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AddressManagement.Api.Controllers;
@@ -83,12 +84,30 @@ public class AddressesController : ControllerBase
     /// Bei fehlenden Treffern wird eine leere Liste zurückgegeben.
     /// </returns>
 
+
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<AddressResponse>>> GetAllAsync(
         [FromQuery] string? city,
-        [FromQuery] string? postalCode)
+        [FromQuery] string? postalCode,
+        [FromQuery] int? page,
+        [FromQuery] int? pageSize)
     {
-        var addresses = await _addressService.GetAllAsync(city, postalCode);
+        IReadOnlyList<Address> addresses;
+
+        if (page.HasValue || pageSize.HasValue)
+        {
+            addresses = await _addressService.GetAllAsync(
+                city,
+                postalCode,
+                page ?? 1,
+                pageSize ?? 10);
+        }
+        else
+        {
+            addresses = await _addressService.GetAllAsync(
+                city,
+                postalCode);
+        }
 
         var response = addresses
             .Select(AddressMapper.ToResponse)
@@ -96,6 +115,7 @@ public class AddressesController : ControllerBase
 
         return Ok(response);
     }
+
 
 
 
