@@ -469,5 +469,42 @@ namespace AddressManagement.UnitTests.Services
         }
 
 
+        /// <summary>
+        /// Prüft, ob der AddressService die Pagination-Parameter
+        /// korrekt an das Repository weitergibt.
+        /// </summary>
+        [Fact]
+        public async Task Test_GetAllWithPagination_ForwardsParametersToRepository()
+        {
+            // Arrange
+            var repositoryMock = new Mock<IAddressRepository>();
+
+            repositoryMock
+                .Setup(r => r.GetAllAsync(
+                    null,
+                    null,
+                    2,
+                    10,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Address>());
+
+            var service = new AddressService(repositoryMock.Object);
+
+            // Act
+            await service.GetAllAsync(
+                city: null,
+                postalCode: null,
+                page: 2,
+                pageSize: 10);
+
+            // Assert
+            repositoryMock.Verify(r => r.GetAllAsync(
+                null,
+                null,
+                2,
+                10,
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
     }
 }
