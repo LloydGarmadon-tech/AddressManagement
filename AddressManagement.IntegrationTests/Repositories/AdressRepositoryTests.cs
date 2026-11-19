@@ -413,5 +413,104 @@ namespace AddressManagement.IntegrationTests.Repositories
             Assert.Empty(context.Addresses);
         }
 
+
+
+        /// <summary>
+        /// Prüft, ob die erste Seite nur die angeforderte
+        /// Anzahl von Adressen enthält.
+        /// </summary>
+        [Fact]
+        public async Task Test_GetAllWithPagination_ReturnFirstPage()
+        {
+            // Arrange
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            for (var i = 1; i <= 5; i++)
+            {
+                await repository.CreateAsync(new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = $"Vorname{i}",
+                    LastName = $"Nachname{i}",
+                    Street = "Teststraße",
+                    HouseNumber = "1",
+                    PostalCode = "21481",
+                    City = "Lauenburg",
+                    Country = "Deutschland"
+                });
+            }
+
+            // Act
+            var addresses = await repository.GetAllAsync(
+                city: null,
+                postalCode: null,
+                page: 1,
+                pageSize: 2);
+
+            // Assert
+            Assert.Equal(2, addresses.Count);
+        }
+
+
+
+        /// <summary>
+        /// Prüft, ob bei der zweiten Seite die ersten
+        /// Einträge übersprungen werden.
+        /// </summary>
+        [Fact]
+        public async Task Test_GetAllWithPagination_ReturnSecondPage()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            var addresses = new List<Address>();
+
+            for (var i = 1; i <= 5; i++)
+            {
+                var address = new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = $"Vorname{i}",
+                    LastName = $"Nachname{i}",
+                    Street = "Teststraße",
+                    HouseNumber = "1",
+                    PostalCode = "21481",
+                    City = "Lauenburg",
+                    Country = "Deutschland"
+                };
+
+                addresses.Add(address);
+                await repository.CreateAsync(address);
+            }
+
+            // Act
+            var result = await repository.GetAllAsync(
+                city: null,
+                postalCode: null,
+                page: 2,
+                pageSize: 2);
+
+            // Assert
+            var expectedIds = addresses
+                .OrderBy(a => a.Id)
+                .Skip(2)
+                .Take(2)
+                .Select(a => a.Id);
+
+            Assert.Equal(expectedIds, result.Select(a => a.Id));
+        }
+
+
     }
 }

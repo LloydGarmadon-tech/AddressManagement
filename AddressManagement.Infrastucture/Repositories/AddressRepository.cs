@@ -76,6 +76,41 @@ namespace AddressManagement.Infrastucture.Repositories
         }
 
         /// <summary>
+        /// Gibt alle Adressen zurück, optional kann nach Stadt und Postleitzahl gefiltert werden.
+        /// </summary>
+        /// <param name="city">Stadt</param>
+        /// <param name="postalCode">Postleitzahl</param>
+        /// <param name="cancellationToken">Token zum Abbrechen der Operation</param>
+        /// <returns>
+        /// Eine schreibgeschützte Liste der Adressen, die den angegebenen
+        /// Filterkriterien entsprechen. Werden keine passenden Adressen gefunden,
+        /// wird eine leere Liste zurückgegeben.
+        /// </returns>
+        public async Task<IReadOnlyList<Address>> GetAllAsync(string? city, string? postalCode, int page, int pageSize,
+                                                              CancellationToken cancellationToken = default)
+        {
+            IQueryable<Address> query = _context.Addresses.AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(city))
+            {
+                query = query.Where(a => a.City == city);
+            }
+
+            if (!string.IsNullOrWhiteSpace(postalCode))
+            {
+                query = query.Where(a => a.PostalCode == postalCode);
+            }
+
+
+            return await query
+                .OrderBy(a => a.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+        }
+
+        /// <summary>
         /// Aktualisiert die bestehende Adresse, 
         /// indem die Eigenschaften des Objektes auf die
         /// bestehende Entität in der Datenbank übertragen wird.

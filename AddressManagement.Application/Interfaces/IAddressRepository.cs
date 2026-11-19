@@ -22,6 +22,13 @@ namespace AddressManagement.Application.Interfaces
             string? postalCode,
             CancellationToken cancellationToken = default);
 
+        Task<IReadOnlyList<Address>> GetAllAsync(
+            string? city,
+            string? postalCode,
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken = default);
+
         Task<bool> UpdateAsync(
             Address address,
             CancellationToken cancellationToken = default);
