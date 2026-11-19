@@ -89,6 +89,12 @@ namespace AddressManagement.Infrastucture.Repositories
         public async Task<IReadOnlyList<Address>> GetAllAsync(string? city, string? postalCode, int page, int pageSize,
                                                               CancellationToken cancellationToken = default)
         {
+            if (page < 1)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(page),
+                    "Die Seitennummer muss mindestens 1 sein.");
+            }
 
             IQueryable<Address> query = _context.Addresses.AsNoTracking();
 
