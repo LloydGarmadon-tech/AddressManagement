@@ -623,5 +623,34 @@ namespace AddressManagement.IntegrationTests.Repositories
             Assert.Equal("page", exception.ParamName);
         }
 
+
+        /// <summary>
+        /// Prüft, ob eine ungültige Seitengröße
+        /// mit einer ArgumentOutOfRangeException abgelehnt wird.
+        /// </summary>
+        [Fact]
+        public async Task Test_GetAllWithPagination_InvalidPageSize_ThrowsException()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+                () => repository.GetAllAsync(
+                    city: null,
+                    postalCode: null,
+                    page: 1,
+                    pageSize: 0));
+
+            // Assert
+            Assert.Equal("pageSize", exception.ParamName);
+        }
+
+
     }
 }
