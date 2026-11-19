@@ -1,4 +1,5 @@
-﻿using AddressManagement.Domain.Entities;
+﻿using AddressManagement.Api.DTOs;
+using AddressManagement.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -1024,5 +1025,51 @@ public class AddressControllerTests
         Assert.Equal("Duck", savedAddress.LastName);
         Assert.Equal("Entenstraße", savedAddress.Street);
     }
+
+
+    /// <summary>
+    /// Prüft, ob der GET-Endpunkt die angeforderte
+    /// Seite mit der korrekten Anzahl an Adressen zurückgibt.
+    /// </summary>
+    [Fact]
+    public async Task Test_GetAllWithPagination_ReturnSecondPage()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>();
+        using var client = factory.CreateClient();
+
+        for (var i = 1; i <= 5; i++)
+        {
+            var address = new CreateAddressRequest
+            {
+                FirstName = $"Vorname{i}",
+                LastName = $"Nachname{i}",
+                Street = "Teststraße",
+                HouseNumber = "1",
+                PostalCode = "21481",
+                City = "Lauenburg",
+                Country = "Deutschland"
+            };
+
+            var createResponse = await client.PostAsJsonAsync(
+                "/api/addresses", address);
+
+            Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+        }
+
+        // Act
+        var response = await client.GetAsync(
+            "/api/addresses?page=2&pageSize=2");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var addresses = await response.Content
+            .ReadFromJsonAsync<List<AddressResponse>>();
+
+        Assert.NotNull(addresses);
+        Assert.Equal(2, addresses.Count);
+    }
+
 
 }
