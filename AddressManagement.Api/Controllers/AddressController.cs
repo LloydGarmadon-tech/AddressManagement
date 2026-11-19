@@ -1,7 +1,6 @@
 ﻿using AddressManagement.Api.DTOs;
 using AddressManagement.Api.Mapping;
 using AddressManagement.Application.Services;
-using AddressManagement.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AddressManagement.Api.Controllers;
@@ -111,11 +110,10 @@ public class AddressesController : ControllerBase
     /// </returns>
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateAsync(
-        Guid id,
-        [FromBody] Address address)
+    Guid id,
+    [FromBody] UpdateAddressRequest request)
     {
-        // Die ID aus der URL ist maßgeblich, falls sie von der im JSON-Body abweicht.
-        address.Id = id;
+        var address = AddressMapper.ToAddress(request, id);
 
         var updated = await _addressService.UpdateAsync(address);
 
@@ -129,6 +127,7 @@ public class AddressesController : ControllerBase
 
         return NoContent();
     }
+
 
 
     /// <summary>
