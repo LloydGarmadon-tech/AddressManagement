@@ -96,11 +96,11 @@ namespace AddressManagement.Infrastucture.Repositories
                     "Die Seitennummer muss mindestens 1 sein.");
             }
 
-            if (pageSize < 1)
+            if (pageSize < 1 || pageSize > 100)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(pageSize),
-                    "Die Seitengröße muss mindestens 1 sein.");
+                    "Die Seitengröße muss zwischen 1 und 100 liegen.");
             }
 
 
