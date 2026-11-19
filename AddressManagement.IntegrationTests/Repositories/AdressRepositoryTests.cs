@@ -512,5 +512,116 @@ namespace AddressManagement.IntegrationTests.Repositories
         }
 
 
+        /// <summary>
+        /// Prüft, ob die letzte Seite auch dann korrekt
+        /// zurückgegeben wird, wenn sie nicht vollständig gefüllt ist.
+        /// </summary>
+        [Fact]
+        public async Task Test_GetAllWithPagination_ReturnIncompleteLastPage()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            for (var i = 1; i <= 5; i++)
+            {
+                await repository.CreateAsync(new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = $"Vorname{i}",
+                    LastName = $"Nachname{i}",
+                    Street = "Teststraße",
+                    HouseNumber = "1",
+                    PostalCode = "21481",
+                    City = "Lauenburg",
+                    Country = "Deutschland"
+                });
+            }
+
+            // Act
+            var result = await repository.GetAllAsync(
+                city: null,
+                postalCode: null,
+                page: 3,
+                pageSize: 2);
+
+            // Assert
+            Assert.Single(result);
+        }
+
+
+        /// <summary>
+        /// Prüft, ob eine leere Liste zurückgegeben wird,
+        /// wenn die angeforderte Seite keine Einträge enthält.
+        /// </summary>
+        [Fact]
+        public async Task Test_GetAllWithPagination_ReturnEmptyPage()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            for (var i = 1; i <= 5; i++)
+            {
+                await repository.CreateAsync(new Address
+                {
+                    Id = Guid.NewGuid(),
+                    FirstName = $"Vorname{i}",
+                    LastName = $"Nachname{i}",
+                    Street = "Teststraße",
+                    HouseNumber = "1",
+                    PostalCode = "21481",
+                    City = "Lauenburg",
+                    Country = "Deutschland"
+                });
+            }
+
+            // Act
+            var result = await repository.GetAllAsync(
+                city: null,
+                postalCode: null,
+                page: 4,
+                pageSize: 2);
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+
+        /// <summary>
+        /// Prüft, ob eine ungültige Seitennummer
+        /// mit einer ArgumentOutOfRangeException abgelehnt wird.
+        /// </summary>
+        [Fact]
+        public async Task Test_GetAllWithPagination_InvalidPage_ThrowsException()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AdressDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            await using var context = new AdressDbContext(options);
+            var repository = new AddressRepository(context);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+                () => repository.GetAllAsync(
+                    city: null,
+                    postalCode: null,
+                    page: 0,
+                    pageSize: 10));
+
+            // Assert
+            Assert.Equal("page", exception.ParamName);
+        }
+
     }
 }

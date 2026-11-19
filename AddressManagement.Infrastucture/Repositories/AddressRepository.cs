@@ -89,6 +89,7 @@ namespace AddressManagement.Infrastucture.Repositories
         public async Task<IReadOnlyList<Address>> GetAllAsync(string? city, string? postalCode, int page, int pageSize,
                                                               CancellationToken cancellationToken = default)
         {
+
             IQueryable<Address> query = _context.Addresses.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(city))
