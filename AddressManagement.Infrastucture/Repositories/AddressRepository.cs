@@ -96,6 +96,14 @@ namespace AddressManagement.Infrastucture.Repositories
                     "Die Seitennummer muss mindestens 1 sein.");
             }
 
+            if (pageSize < 1)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(pageSize),
+                    "Die Seitengröße muss mindestens 1 sein.");
+            }
+
+
             IQueryable<Address> query = _context.Addresses.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(city))
