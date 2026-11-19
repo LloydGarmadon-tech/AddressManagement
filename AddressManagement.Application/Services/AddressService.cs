@@ -43,7 +43,7 @@ namespace AddressManagement.Application.Services
         /// <param name="city">optionaler Filter nach Stadt</param>
         /// <param name="postalcode">optionaler Filter nach Postleitzahl</param>
         /// <returns>Eine Liste aller gefundenen Adressen.</returns>
-        public async Task<IReadOnlyList<Address>?> GetAllAsync(string? city = null, string? postalcode = null)
+        public async Task<IReadOnlyList<Address>> GetAllAsync(string? city = null, string? postalcode = null)
         {
             return await _repository.GetAllAsync(city, postalcode);
         }
